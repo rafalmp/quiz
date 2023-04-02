@@ -40,19 +40,27 @@ func main() {
 	timer := time.NewTimer(time.Duration(*timeLimit) * time.Second)
 
 	for i, p := range problems {
-		select {
-		case <-timer.C:
-			fmt.Printf("You scored %d out of %d.\n", correct, len(problems))
-			return
-		default:
-			fmt.Printf("Problem #%d: %s = ", i+1, p.question)
+		fmt.Printf("Problem #%d: %s = ", i+1, p.question)
+		answerChan := make(chan string)
+
+		go func() {
 			var answer string
 			fmt.Scanf("%s\n", &answer)
+			answerChan <- answer
+		}()
+
+		select {
+		case <-timer.C:
+			fmt.Printf("\nYou scored %d out of %d.\n", correct, len(problems))
+			return
+		case answer := <-answerChan:
 			if answer == p.answer {
 				correct++
 			}
 		}
 	}
+
+	fmt.Printf("You scored %d out of %d.\n", correct, len(problems))
 }
 
 func parseRecords(records [][]string) (result []problem) {
