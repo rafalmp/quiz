@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"strings"
 )
 
 type problem struct {
@@ -52,7 +53,7 @@ func parseRecords(records [][]string) (result []problem) {
 	for i, record := range records {
 		result[i] = problem{
 			question: record[0],
-			answer:   record[1],
+			answer:   strings.TrimSpace(record[1]),
 		}
 	}
 	return
